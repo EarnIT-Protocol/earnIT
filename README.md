@@ -6,7 +6,9 @@
 
 ## Overview
 
-EarnIT is a yield infrastructure layer that lets any fintech, neobank, or DeFi protocol embed commodity-backed RWA yield in an afternoon. Partners integrate a single SDK. Their users earn 9–12% APY on USDC-denominated deposits, backed by tokenized gold, agricultural receivables, and oil funding rate arbitrage — without the partner ever touching the underlying RWA stack.
+EarnIT is a yield infrastructure layer that lets any fintech, neobank, or DeFi protocol embed commodity-backed RWA yield in an afternoon. Partners integrate a single SDK. Their users deposit **cNGN** — Nigeria's regulated naira stablecoin — and earn 9–12% APY on their naira asset, with the protocol handling the USDC conversion internally via a built-in Curve-style stableswap.
+
+Under the hood: cNGN deposits are routed through an on-chain FX swap (cNGN → USDC), deployed into the USYC yield strategy, and redeemable back to cNGN at any time. Users stay denominated in naira. EarnIT handles the rest.
 
 EarnIT is not a consumer app. It is the engine consumer apps run on.
 
@@ -25,17 +27,18 @@ EarnIT closes this gap.
 ## Architecture
 
 ```
-  LAYER 4  End Users          deposit · borrow · earn
-           ───────────────────────────────────────────
+  LAYER 4  End Users          deposit cNGN · borrow · earn naira yield
+           ────────────────────────────────────────────────────────────
   LAYER 3  Partner Apps       JustHodl · Chipper Cash
            (SDK consumers)    Paga · neobanks · DEXes
-           ───────────────────────────────────────────
+           ────────────────────────────────────────────────────────────
   LAYER 2  EarnIT SDK         npm install @earnit/sdk
            Partner API        REST + Webhooks
-           ───────────────────────────────────────────
+           ────────────────────────────────────────────────────────────
   LAYER 1  EarnIT Protocol    ArcVault (ERC-4626)
-  ◄ BUILD  (Arc-native)       Allocator · Borrow · CCTP
-           ───────────────────────────────────────────
+  ◄ BUILD  (Arc-native)       EarnITFXSwap (cNGN ⇄ USDC)
+                              Allocator · Borrow · CCTP
+           ────────────────────────────────────────────────────────────
   LAYER 0  Arc Blockchain     USYC · CCTP · xReserve
            (settlement)       Stork Oracle
 ```
@@ -46,11 +49,14 @@ Partners integrate at **Layer 2**. EarnIT owns Layers 0–1. Partners earn a fee
 
 ## Core Products
 
-### arcUSD
-ERC-4626 yield-bearing stablecoin. Deposit USDC, receive arcUSD. Commodity yield accretes silently to the share price — no claims, no manual compounding.
+### arcNGN
+ERC-4626 yield-bearing naira vault. Deposit cNGN, receive arcNGN shares. The protocol swaps your cNGN to USDC internally, deploys it into the USYC strategy, and accretes yield back to your naira position — silently, with no manual compounding. Redeem at any time; you receive cNGN.
+
+### EarnIT-FX Swap
+Built-in Curve stableswap AMM for cNGN ⇄ USDC. Uses the StableSwap invariant with an amplification factor `A` and a rate multiplier derived from the live NGN/USD oracle rate. Every deposit and withdrawal routes through this swap — users never touch USDC directly. See [Swap Mechanics](#swap-mechanics) for the full mathematical treatment.
 
 ### arcBorrow
-Self-repaying loan facility against arcUSD collateral. The yield your deposit generates offsets your borrow cost over time. No liquidation risk from price drift; the position heals itself.
+Self-repaying loan facility against arcNGN collateral. The yield your deposit generates offsets your borrow cost over time. No liquidation risk from price drift; the position heals itself.
 
 ### EarnIT SDK
 One npm package. One afternoon. Any app gets yield + borrow without building the RWA layer.
@@ -116,44 +122,107 @@ import { EarnIT } from "@earnit/sdk";
 
 const client = new EarnIT({ apiKey: process.env.EARNIT_API_KEY });
 
-// Deposit on behalf of a user
+// Deposit cNGN — protocol handles the USDC swap internally
 const receipt = await client.deposit({
-  asset: "USDC",
-  amount: "1000",
+  asset: "cNGN",
+  amount: "150000",        // ₦150,000
   receiver: userWalletAddress,
 });
 
-// Check current yield position
+// Check current yield position (valued in cNGN)
 const position = await client.getPosition(userWalletAddress);
 console.log(position.currentValue, position.yieldEarned);
 
-// Withdraw
+// Withdraw — receive cNGN, not USDC
 await client.withdraw({ shares: position.shares, receiver: userWalletAddress });
 ```
 
 ### Direct contract interaction
 
 ```typescript
-// 1. Approve strategy to spend USDC
-await usdc.approve(strategyAddress, amount);
+// 1. Approve vault to spend cNGN
+await cNGN.approve(arcNGNVaultAddress, amount);
 
-// 2. Deposit
-const shares = await strategy.deposit(amount, receiverAddress);
+// 2. Deposit cNGN — vault swaps to USDC and enters strategy
+const shares = await arcNGNVault.deposit(amount, receiverAddress);
 
-// 3. Redeem
-const assets = await strategy.redeem(shares, receiverAddress, ownerAddress);
+// 3. Redeem shares — strategy exits USDC, swaps back to cNGN
+const assets = await arcNGNVault.redeem(shares, receiverAddress, ownerAddress);
 ```
+
+---
+
+## Swap Mechanics
+
+EarnIT embeds the **EarnIT Protocol FX Swap** — a two-token StableSwap AMM — to route cNGN ⇄ USDC without leaving the protocol. Because cNGN and USDC have different nominal values, raw balances cannot be compared directly. A rate multiplier (sourced from the Stork oracle) converts both balances into a common virtual denomination before any swap or invariant computation.
+
+### Naming
+
+| Symbol | Meaning |
+|---|---|
+| `X`, `Y` | Real balances of cNGN and USDC in the pool |
+| `X̃`, `Ỹ` | Virtual balances after rate multiplier (equal-value normalised) |
+| `dx`, `dy` | Input and output amounts for a swap |
+| `A` | Amplification factor — controls price depth |
+| `D` | StableSwap invariant constant |
+| `n` | Number of tokens (2 for all EarnIT pools) |
+
+### The StableSwap Invariant
+
+The pool satisfies the Curve StableSwap invariant at all times:
+
+```
+An²·(X̃ + Ỹ) + D = A·D·n² + D^(n+1) / (n^n · X̃ · Ỹ)
+```
+
+When `A → ∞` the pool behaves as a constant-sum market maker (zero slippage at peg). When `A → 0` it collapses to a constant-product AMM. EarnIT pools use a calibrated `A` to keep slippage near-zero around the live NGN/USD rate while still having bounded depth away from peg.
+
+### Computing D (Newton's Method)
+
+`D` cannot be solved algebraically. The protocol applies Newton's method iteratively. Define the residual function `f(D)` as the imbalance under the invariant, then iterate:
+
+```
+D_next = (A·n²·S·D + n·D_p) / ((A·n² - 1)·D + (n + 1)·D_p)
+
+where:
+  S   = X̃ + Ỹ          (sum of virtual balances)
+  D_p = D^(n+1) / (n^n · X̃ · Ỹ)   (product term)
+```
+
+Iteration continues until `|D_next - D| < 1` (convergence). D is recomputed before every swap. It only changes permanently when liquidity is added or removed.
+
+### Computing Swap Output
+
+Given a swap input that moves virtual balance `X̃` to a new value `X̃'`, the protocol solves for the new `Ỹ'` that keeps `D` constant — again via Newton's method:
+
+```
+Y_next = (j² + b·j - c) / (2j + b)
+
+where:
+  b = X̃' + D / (A·n²)
+  c = D^(n+1) / (n^n · A · X̃')
+```
+
+The real output amount `dy = Y - Y'` (virtual → real via rate multiplier). A swap fee is applied to `dy` before it reaches the user, with the remainder accruing to liquidity providers.
 
 ---
 
 ## Yield Mechanics
 
-Yield flows from the USYC teller rate differential. The teller publishes a `currentRate` (e.g. `1_000_500` = 1.0005× per period). The keeper calls `report()` on a scheduled basis, crystallising the difference between USYC market value and the strategy's recorded cost basis. Profit is streamed into the share price over three days to prevent sandwich attacks and smooth user-facing APY.
+Yield flows from the USYC teller rate differential. When a user deposits cNGN, the EarnITFX Swap converts it to USDC at the live oracle rate. That USDC enters the USYC strategy, which earns the teller's `currentRate` (e.g. `1_000_500` = 1.0005× per period). The keeper calls `report()` on a scheduled basis, crystallising the rate differential as profit. Profit is streamed into the share price over three days to prevent sandwich attacks and smooth the user-facing APY.
+
+On withdrawal, the process reverses: shares redeem to USDC, which swaps back to cNGN via EarnITFX. The user receives naira throughout.
 
 ```
+User deposits cNGN
+  → EarnITFX Swap: cNGN → USDC   (oracle rate, low slippage)
+  → USYC Strategy: USDC → yield
+  → report(): profit accretes to arcNGN share price
+  → User redeems arcNGN → USDC → cNGN
+
 currentRate: 1_000_500  →  ~18.3% APY (daily compounding, annualised)
 Performance fee: 5% of realised yield
-Net to depositors: ~17.4% gross, subject to allocator composition
+Net to depositors: ~17.4% gross, before FX swap fee
 ```
 
 ---
@@ -184,10 +253,12 @@ Net to depositors: ~17.4% gross, subject to allocator composition
 
 - [x] USYC strategy + factory (testnet)
 - [x] Mock teller + deposit/redeem flow
+- [x] EarnITFX StableSwap — cNGN ⇄ USDC invariant (spec complete)
+- [ ] EarnITFX on-chain deployment + oracle integration (Stork)
+- [ ] arcNGN vault: cNGN deposit → swap → yield → redeem flow
 - [ ] arcBorrow: self-repaying loan module
 - [ ] SDK v0.1 public release
 - [ ] CCTP cross-chain deposit routing
-- [ ] Stork Oracle integration for commodity pricing
 - [ ] Mainnet Arc deployment
 - [ ] Partner portal + fee dashboard
 
