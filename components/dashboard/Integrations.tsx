@@ -2,10 +2,12 @@
 
 import { Code2, Globe } from "lucide-react";
 import { CodeBlock } from "@/components/ui/CodeBlock";
-import { embedSnippet, type Env } from "@/lib/mock/dashboard";
+import { embedSnippet } from "@/lib/mock/dashboard";
+import { useDashboardEnv } from "./env-context";
 
 /** SDK + network status cards, plus the embeddable widget snippet. */
-export function Integrations({ env }: { env: Env }) {
+export function Integrations() {
+  const { env } = useDashboardEnv();
   const networkLabel = env === "test" ? "Testnet" : "Mainnet";
 
   return (

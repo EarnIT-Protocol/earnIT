@@ -2,6 +2,7 @@
 
 import { type CSSProperties, useMemo, useState } from "react";
 import { MOCK_VAULT } from "@/lib/mock/vault";
+import { TokenGlyph } from "./TokenGlyph";
 import type { DisplayCurrency, EarnitYieldWidgetProps, WidgetTab } from "./types";
 
 type CSSVars = CSSProperties & Record<`--${string}`, string>;
@@ -167,24 +168,7 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
       <div style={{ padding: "18px 18px 0 18px", display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg,#2775CA,#1f5fa8)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontWeight: 600,
-                fontSize: 13,
-                fontFamily: "var(--font-mono), monospace",
-                boxShadow: "0 2px 6px rgba(39,117,202,.3)",
-              }}
-            >
-              $
-            </div>
+            <TokenGlyph asset={asset} size={40} dark={dark} />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
               <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-.01em" }}>{vaultName}</span>
               <span style={{ fontSize: 12, color: "var(--ew-muted)", fontFamily: "var(--font-mono), monospace" }}>
@@ -223,6 +207,9 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
             <span
               key={tag}
               style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
                 whiteSpace: "nowrap",
                 fontSize: 11,
                 fontWeight: 500,
@@ -233,6 +220,8 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
                 color: "var(--ew-muted)",
               }}
             >
+              {tag === "USYC Strategy" && <TokenGlyph asset="USYC" size={14} dark={dark} />}
+              {tag === "Arc" && <TokenGlyph asset="Arc" size={13} dark={dark} />}
               {tag}
             </span>
           ))}
@@ -385,23 +374,7 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
                 flexShrink: 0,
               }}
             >
-              <span
-                style={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg,#2775CA,#1f5fa8)",
-                  color: "#fff",
-                  fontSize: 10,
-                  fontWeight: 600,
-                  fontFamily: "var(--font-mono), monospace",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                $
-              </span>
+              <TokenGlyph asset={asset} size={18} dark={dark} />
               <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "var(--font-mono), monospace" }}>{asset}</span>
             </div>
           </div>
