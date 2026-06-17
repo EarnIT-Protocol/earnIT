@@ -60,8 +60,14 @@ export interface ActivityItem {
 export const ACTIVITY: ActivityItem[] = [
   { text: "Deposit settled · usr_8f2a", time: "2 min ago", amount: "+$500", kind: "deposit" },
   { text: "Yield accrued", time: "18 min ago", amount: "+$1,204", kind: "yield" },
+  { text: "Deposit settled · usr_2k9c", time: "42 min ago", amount: "+$1,250", kind: "deposit" },
   { text: "Withdraw settled · usr_3k1b", time: "1 hr ago", amount: "-$320", kind: "withdraw" },
-  { text: "API key created · CI pipeline", time: "3 days ago", amount: "", kind: "meta" },
+  { text: "Deposit settled · usr_7p4d", time: "2 hr ago", amount: "+$80", kind: "deposit" },
+  { text: "Yield accrued", time: "3 hr ago", amount: "+$980", kind: "yield" },
+  { text: "Withdraw settled · usr_9m2e", time: "5 hr ago", amount: "-$1,500", kind: "withdraw" },
+  { text: "API key created · CI pipeline", time: "1 day ago", amount: "", kind: "meta" },
+  { text: "Deposit settled · usr_4f8a", time: "1 day ago", amount: "+$3,200", kind: "deposit" },
+  { text: "Yield accrued", time: "2 days ago", amount: "+$1,060", kind: "yield" },
 ];
 
 /** Dot color per activity kind. */
