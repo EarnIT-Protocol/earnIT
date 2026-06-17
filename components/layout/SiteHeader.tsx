@@ -80,7 +80,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2.5 max-[860px]:hidden">
           <Link
-            href="/dashboard"
+            href="/signin"
             className="rounded-[9px] px-3 py-2 text-sm font-medium text-muted no-underline transition-colors duration-150 hover:text-ink"
           >
             Sign in
@@ -89,7 +89,7 @@ export function SiteHeader() {
             href="/get-started"
             className="rounded-[10px] bg-citron px-4 py-[9px] text-sm font-semibold text-ink no-underline shadow-[0_2px_8px_-2px_rgba(10,92,68,0.3)] transition-all duration-150 hover:-translate-y-px hover:brightness-[1.03] hover:shadow-[0_8px_18px_-6px_rgba(10,92,68,0.4)]"
           >
-            Get API key
+            Get started
           </Link>
         </div>
 
@@ -144,10 +144,10 @@ export function SiteHeader() {
                 onClick={() => setMenuOpen(false)}
                 className="rounded-xl bg-citron p-[15px] text-center text-base font-semibold text-ink no-underline"
               >
-                Get API key
+                Get started
               </Link>
               <Link
-                href="/dashboard"
+                href="/signin"
                 onClick={() => setMenuOpen(false)}
                 className="rounded-xl border border-hairline p-[15px] text-center text-base font-medium text-ink no-underline"
               >
