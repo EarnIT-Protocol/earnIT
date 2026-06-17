@@ -38,6 +38,8 @@ export const metadata: Metadata = {
   authors: [{ name: "EarnIT" }],
   creator: "EarnIT",
   alternates: { canonical: "/" },
+  // og:image, twitter:image and the favicon are emitted automatically from the
+  // app/opengraph-image.png and app/icon.svg file conventions — no manual entries.
   openGraph: {
     type: "website",
     siteName: "EarnIT",
@@ -61,7 +63,11 @@ export default function RootLayout({
     <html lang="en" className={geistMono.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://api.fontshare.com" />
-        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://cdn.fontshare.com"
+          crossOrigin=""
+        />
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap"
