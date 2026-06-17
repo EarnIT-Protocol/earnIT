@@ -1,0 +1,34 @@
+---
+title: Deposits
+description: Create and retrieve deposits.
+---
+
+## Create a deposit
+
+<span className="font-mono text-sm">**POST** `/v1/deposits`</span>
+
+```bash
+curl -X POST https://api.earnit.xyz/v1/deposits \
+  -H "Authorization: Bearer ek_live_…" \
+  -H "Content-Type: application/json" \
+  -d '{ "asset": "USDC", "amount": "150.00", "receiver": "0xA11ce" }'
+```
+
+### Request body
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `asset` | string | `USDC`, `cNGN`, or `EURC`. |
+| `amount` | string | Decimal amount in asset units. |
+| `receiver` | string | Wallet receiving the shares. |
+
+### Response
+
+```json
+{
+  "id": "dep_19ac",
+  "status": "pending",
+  "shares": "143.71",
+  "txHash": "0x…"
+}
+```

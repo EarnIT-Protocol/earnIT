@@ -1,0 +1,38 @@
+---
+title: Overview
+description: The EarnIT client — construction and shared conventions.
+---
+
+The `@earnit/sdk` package exposes a single `EarnIT` client.
+
+```ts
+import { EarnIT } from "@earnit/sdk";
+
+const earnit = new EarnIT({
+  apiKey: process.env.EARNIT_API_KEY!,
+  // optional
+  baseUrl: "https://api.earnit.xyz/v1",
+});
+```
+
+## Constructor options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiKey` | `string` | — | Your `ek_pub_` or `ek_` key. Required. |
+| `baseUrl` | `string` | `https://api.earnit.xyz/v1` | API base URL. |
+
+## Conventions
+
+- All **amounts are decimal strings** in the asset's units (e.g. `"150.00"`), never floats.
+- All methods return promises and throw a typed `EarnitError` on failure — see [Errors](/docs/api-reference/errors).
+- `asset` is one of `"USDC" | "cNGN" | "EURC"`.
+
+## Methods
+
+<Cards>
+  <Card title="deposit()" href="/docs/sdk-reference/deposit" description="Deposit on behalf of a user." />
+  <Card title="withdraw()" href="/docs/sdk-reference/withdraw" description="Redeem shares back to the asset." />
+  <Card title="getPosition()" href="/docs/sdk-reference/get-position" description="Read a user's balance and yield." />
+  <Card title="webhooks" href="/docs/sdk-reference/webhooks" description="Subscribe to settlement events." />
+</Cards>

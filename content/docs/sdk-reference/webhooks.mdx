@@ -1,0 +1,37 @@
+---
+title: Webhooks
+description: Subscribe to settlement and yield events.
+---
+
+EarnIT emits webhooks for every lifecycle event. Configure your endpoint and subscribed events in the [dashboard](/dashboard) or via the API.
+
+## Event types
+
+| Event | Fires when |
+| --- | --- |
+| `deposit.settled` | A deposit confirms on Arc. |
+| `withdraw.settled` | A withdrawal confirms on Arc. |
+| `yield.accrued` | A keeper report realizes new yield. |
+| `payout.sent` | A partner fee-share payout is sent. |
+
+## Payload
+
+```json
+{
+  "id": "evt_8f2a1c",
+  "type": "deposit.settled",
+  "data": {
+    "depositId": "dep_19ac",
+    "receiver": "0xA11ce…",
+    "asset": "USDC",
+    "amount": "150.00",
+    "shares": "143.71",
+    "txHash": "0x…"
+  },
+  "createdAt": "2026-06-17T10:00:00Z"
+}
+```
+
+<Callout type="warn">
+  Always verify the `EarnIT-Signature` header against your webhook signing secret before trusting a payload.
+</Callout>

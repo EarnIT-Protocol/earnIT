@@ -1,0 +1,20 @@
+---
+title: Authentication
+description: Authenticate REST requests with your API key.
+---
+
+The REST API is available at `https://api.earnit.xyz/v1`. Authenticate with a bearer token:
+
+```bash
+curl https://api.earnit.xyz/v1/positions/0xA11ce \
+  -H "Authorization: Bearer ek_live_8f2a…"
+```
+
+| Key prefix | Environment | Where to use |
+| --- | --- | --- |
+| `ek_pub_test_…` | Test | Browser / testnet |
+| `ek_live_…` | Live | Server only / production |
+
+<Callout type="warn">
+  Secret (`ek_`) keys must only be used server-side. Rotate any key that may have been exposed from the [dashboard](/dashboard).
+</Callout>

@@ -1,0 +1,59 @@
+---
+title: Installation
+description: Add the EarnIT SDK to your app and configure your API key.
+---
+
+## Install the SDK
+
+<Tabs items={["npm", "pnpm", "yarn"]}>
+
+<Tab value="npm">
+
+```bash
+npm install @earnit/sdk
+```
+
+</Tab>
+
+<Tab value="pnpm">
+
+```bash
+pnpm add @earnit/sdk
+```
+
+</Tab>
+
+<Tab value="yarn">
+
+```bash
+yarn add @earnit/sdk
+```
+
+</Tab>
+
+</Tabs>
+
+## Get your API key
+
+Create a key in the [partner dashboard](/dashboard). Keys are environment-scoped:
+
+| Prefix | Environment | Use |
+| --- | --- | --- |
+| `ek_pub_test_…` | Test | Client-side, testnet |
+| `ek_live_…` | Live | Server-side, production |
+
+<Callout type="warn">
+  Never expose an `ek_live_` key in client code. Use the publishable `ek_pub_` key in the browser and keep secret keys on your server.
+</Callout>
+
+## Configure the client
+
+```ts title="lib/earnit.ts"
+import { EarnIT } from "@earnit/sdk";
+
+export const earnit = new EarnIT({
+  apiKey: process.env.EARNIT_API_KEY!,
+});
+```
+
+Next: [make your first deposit](/docs/getting-started/quickstart).

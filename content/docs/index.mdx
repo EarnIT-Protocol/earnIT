@@ -1,0 +1,25 @@
+---
+title: Introduction
+description: Embed regulated real-world-asset yield in an afternoon. One SDK routes stablecoin deposits into Circle USYC treasury yield on Arc.
+---
+
+EarnIT is yield infrastructure for fintechs. Your users deposit a stablecoin; EarnIT routes it into Circle's **USYC** (a tokenized US-treasury fund) through ERC-4626 vaults on **Arc**, and accrues yield back into their balance. You integrate once and earn a share of the yield your users generate.
+
+You never build custody, oracles, smart contracts, or a compliance function. EarnIT owns the protocol layer — you ship the experience.
+
+<Callout type="info">
+  EarnIT is currently live on **Arc testnet**. Do not move mainnet funds through it until the core contracts have completed a third-party audit.
+</Callout>
+
+## How it fits together
+
+- **SDK & API** — `@earnit/sdk` and a REST API handle deposits, withdrawals, positions, and webhooks.
+- **Embeddable widget** — a white-label deposit/withdraw card you drop into your app.
+- **Protocol** — non-custodial ERC-4626 vaults that settle into USYC on Arc.
+
+<Cards>
+  <Card title="Get started" href="/docs/getting-started/install" description="Install the SDK and make your first deposit." />
+  <Card title="SDK Reference" href="/docs/sdk-reference" description="Every method, parameter, and return type." />
+  <Card title="API Reference" href="/docs/api-reference/authentication" description="REST endpoints, auth, and webhooks." />
+  <Card title="Guides" href="/docs/guides/embed-widget" description="Embed the widget, wire webhooks, go to production." />
+</Cards>

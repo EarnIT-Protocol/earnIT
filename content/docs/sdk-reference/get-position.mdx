@@ -1,0 +1,33 @@
+---
+title: getPosition()
+description: Read a user's current balance, value, and accrued yield.
+---
+
+```ts
+earnit.getPosition(address: string): Promise<Position>
+```
+
+## Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `address` | `string` | The user's wallet address. |
+
+## Returns
+
+`Position`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `shares` | `string` | Vault shares held. |
+| `currentValue` | `string` | Current value in asset units. |
+| `yieldEarned` | `string` | Yield accrued since first deposit. |
+| `apy` | `number` | Current estimated APY. |
+
+## Example
+
+```ts
+const position = await earnit.getPosition(userWalletAddress);
+
+console.log(`${position.currentValue} (+${position.yieldEarned})`);
+```

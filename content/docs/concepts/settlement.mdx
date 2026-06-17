@@ -1,0 +1,23 @@
+---
+title: Settlement on Arc
+description: Why EarnIT runs on Arc and what that means for integrators.
+---
+
+EarnIT settles on **Arc**, Circle's stablecoin-native L2.
+
+- **USDC is the native gas token** — fees are predictable in dollar terms, and there is no volatile gas asset to manage.
+- **Sub-second blocks, deterministic finality** — deposits and redemptions confirm fast with BFT consensus.
+- **24/7 / T+0 redemptions** — USYC subscriptions and redemptions settle atomically in real time.
+
+## What integrators need
+
+| Parameter | Value |
+| --- | --- |
+| Chain ID | `5042002` (testnet) |
+| RPC | `https://rpc.testnet.arc.network` |
+| Explorer | `https://testnet.arcscan.app` |
+| Native / transfer asset | USDC |
+
+<Callout type="info">
+  On Arc, the native USDC interface uses 18 decimals while the ERC-20 interface uses 6. Always read `decimals()` and never mix the two raw values.
+</Callout>
