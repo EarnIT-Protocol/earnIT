@@ -88,7 +88,7 @@ export function Hero() {
 
         {/* Right column — floating widget + pinned badges */}
         <motion.div
-          className="relative justify-self-end max-[940px]:justify-self-center"
+          className="relative justify-self-end max-[940px]:w-full max-[940px]:justify-self-center max-[940px]:px-5"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -100,7 +100,7 @@ export function Hero() {
                 "radial-gradient(circle at 50% 40%, rgba(255,255,255,.7), rgba(255,255,255,0) 70%)",
             }}
           />
-          <div className="relative animate-[ew-float_6s_ease-in-out_infinite]">
+          <div className="relative mx-auto w-full max-w-[400px] animate-[ew-float_6s_ease-in-out_infinite]">
             {/* Dark "Live yield" badge — figure animates */}
             <div className="absolute -top-[18px] -left-[22px] z-[3] flex items-center gap-2 rounded-xl bg-ink px-[13px] py-2 shadow-[0_12px_30px_-8px_rgba(11,20,16,.4)]">
               <span className="h-[7px] w-[7px] rounded-full bg-citron animate-[ew-pulse_1.6s_ease-in-out_infinite]" />
