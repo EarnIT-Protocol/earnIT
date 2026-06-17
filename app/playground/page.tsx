@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { ConfigPanel } from "@/components/playground/ConfigPanel";
@@ -20,6 +20,21 @@ import {
 export default function PlaygroundPage() {
   const [config, setConfigState] = useState<PlaygroundConfig>(DEFAULT_CONFIG);
   const [device, setDevice] = useState<PlaygroundDevice>("desktop");
+
+  // On real phones a desktop browser frame can't render usefully: lock the
+  // preview to Mobile and hide the Desktop toggle below 768px.
+  const [isPhone, setIsPhone] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 768px)");
+    const sync = (matches: boolean) => {
+      setIsPhone(matches);
+      if (matches) setDevice("mobile");
+    };
+    sync(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => sync(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   // Partial patches merge into the single source-of-truth config object.
   const setConfig = (patch: Partial<PlaygroundConfig>) =>
@@ -51,15 +66,24 @@ export default function PlaygroundPage() {
         </div>
       </div>
 
-      {/* Split layout: config panel (left) + preview & code (right) */}
+      {/* Split layout. Desktop: config (narrow, left) + preview & code (wide,
+          right). Narrow (≤980px): single column with the full-width preview on
+          top and the config card below — preview leads the DOM order. */}
       <div className="ew-pg-main mx-auto grid max-w-[1280px] grid-cols-[360px_1fr] items-start gap-7 px-6 pb-16 pt-7 max-[980px]:grid-cols-1">
-        <ConfigPanel config={config} setConfig={setConfig} />
-
-        <div className="flex min-w-0 flex-col gap-5">
-          <LivePreview config={config} device={device} setDevice={setDevice} />
+        <div className="flex min-w-0 flex-col gap-5 max-[980px]:col-start-1 max-[980px]:row-start-1 [@media(min-width:981px)]:col-start-2 [@media(min-width:981px)]:row-start-1">
+          <LivePreview
+            config={config}
+            device={device}
+            setDevice={setDevice}
+            isPhone={isPhone}
+          />
 
           {/* Generated code — three tabs, always reflecting current config */}
           <CodeBlock tabs={tabs} />
+        </div>
+
+        <div className="max-[980px]:col-start-1 max-[980px]:row-start-2 [@media(min-width:981px)]:col-start-1 [@media(min-width:981px)]:row-start-1">
+          <ConfigPanel config={config} setConfig={setConfig} />
         </div>
       </div>
     </SiteShell>

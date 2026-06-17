@@ -80,6 +80,9 @@ export const ACTIVITY_AMOUNT: Record<ActivityKind, string> = {
   meta: "#5B6B63",
 };
 
+/** Trailing 12-month axis labels for the dashboard charts. */
+export const CHART_MONTHS = ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+
 /** 12-month "Assets routed" area chart, as an SVG path point list (0–600 / 0–200). */
 export const ASSETS_AREA_POINTS: Array<[number, number]> = [
   [0, 170],

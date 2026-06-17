@@ -40,8 +40,9 @@ export function SiteHeader() {
   }, [menuOpen]);
 
   return (
+    <>
     <header
-      className="sticky top-0 z-100 w-full transition-all duration-300"
+      className="sticky top-0 z-[100] w-full transition-all duration-300"
       style={
         scrolled
           ? {
@@ -101,6 +102,7 @@ export function SiteHeader() {
           <Menu size={20} />
         </button>
       </div>
+    </header>
 
       <AnimatePresence>
         {menuOpen && (
@@ -109,7 +111,7 @@ export function SiteHeader() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-200 flex flex-col bg-paper p-5"
+            className="fixed inset-0 z-[200] flex flex-col bg-paper p-5"
           >
             <div className="flex h-11 items-center justify-between">
               <Logo href={null} />
@@ -155,6 +157,6 @@ export function SiteHeader() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
