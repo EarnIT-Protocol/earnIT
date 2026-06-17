@@ -1,0 +1,25 @@
+---
+title: Errors
+description: Error format and status codes.
+---
+
+Errors return a non-2xx status and a typed body. The SDK throws these as `EarnitError`.
+
+```json
+{
+  "error": {
+    "code": "insufficient_balance",
+    "message": "Receiver has insufficient balance for this withdrawal.",
+    "status": 422
+  }
+}
+```
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `invalid_request` | Malformed parameters. |
+| `401` | `unauthorized` | Missing or invalid API key. |
+| `404` | `not_found` | Resource does not exist. |
+| `422` | `insufficient_balance` | Not enough balance/shares. |
+| `429` | `rate_limited` | Too many requests. |
+| `500` | `internal_error` | Unexpected server error. |

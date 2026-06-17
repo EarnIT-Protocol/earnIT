@@ -1,0 +1,70 @@
+---
+title: Quickstart
+description: Make a deposit, read the position, and withdraw — end to end in a few minutes.
+---
+
+This walks through the full deposit → earn → withdraw loop with the SDK.
+
+<Steps>
+
+<Step>
+
+### Initialize the client
+
+```ts
+import { EarnIT } from "@earnit/sdk";
+
+const earnit = new EarnIT({ apiKey: process.env.EARNIT_API_KEY! });
+```
+
+</Step>
+
+<Step>
+
+### Deposit on behalf of a user
+
+EarnIT swaps and routes the deposit into the USYC strategy internally. You pass the asset, amount, and the receiving wallet.
+
+```ts
+const receipt = await earnit.deposit({
+  asset: "USDC",
+  amount: "150.00",
+  receiver: userWalletAddress,
+});
+
+console.log(receipt.shares); // vault shares minted to the user
+```
+
+</Step>
+
+<Step>
+
+### Read the user's position
+
+```ts
+const position = await earnit.getPosition(userWalletAddress);
+
+console.log(position.currentValue); // value in asset terms
+console.log(position.yieldEarned);  // accrued yield
+```
+
+</Step>
+
+<Step>
+
+### Withdraw
+
+```ts
+await earnit.withdraw({
+  shares: position.shares,
+  receiver: userWalletAddress,
+});
+```
+
+</Step>
+
+</Steps>
+
+<Callout type="info">
+  Yield accrues into the vault share price continuously and is realized by a keeper on a schedule — there is nothing for your users to claim or compound manually.
+</Callout>

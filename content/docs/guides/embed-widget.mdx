@@ -1,0 +1,39 @@
+---
+title: Embed the Widget
+description: Drop the white-label EarnIT yield widget into your app.
+---
+
+The embeddable widget is the fastest way to ship yield — a deposit/withdraw card you fully theme to your brand. Configure it visually in the [Playground](/playground), then copy the code.
+
+## React
+
+```tsx
+import { EarnitYieldWidget } from "@earnit/react";
+
+export function Earn() {
+  return (
+    <EarnitYieldWidget
+      apiKey={process.env.NEXT_PUBLIC_EARNIT_KEY!}
+      asset="USDC"
+      theme={{ primaryColor: "#0A5C44", accentColor: "#C6F24E", radius: 20 }}
+    />
+  );
+}
+```
+
+## Script embed
+
+```html
+<div id="earnit"></div>
+<script src="https://cdn.earnit.xyz/widget.js"></script>
+<script>
+  EarnIT.mount("#earnit", {
+    apiKey: "ek_pub_test_…",
+    asset: "USDC",
+  });
+</script>
+```
+
+<Callout type="info">
+  Every brand control (colors, radius, light/dark, asset, display currency, which tabs show) maps to a prop. Preview them all in the [Playground](/playground).
+</Callout>

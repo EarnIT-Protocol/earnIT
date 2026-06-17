@@ -1,0 +1,24 @@
+---
+title: How Yield Works
+description: Where the yield comes from and how it reaches your users.
+---
+
+EarnIT deposits flow into **USYC**, Circle's onchain representation of a short-duration US-treasury fund. USYC earns roughly the overnight rate through reverse-repo agreements backed by US government securities.
+
+## The path of a deposit
+
+1. A user deposits a stablecoin through your app.
+2. EarnIT routes it into the **ERC-4626 USYC strategy** on Arc.
+3. The strategy subscribes to USYC via Circle's teller.
+4. A keeper calls `report()` on a schedule, realizing the accrued rate as profit.
+5. Profit streams into the vault **share price** over an unlock window, so each share is worth progressively more of the underlying asset.
+
+Your users never claim or compound — their position value rises as the share price rises.
+
+## Share price, not rebasing
+
+Positions are denominated in **vault shares**. Value is `shares × sharePrice`. As yield accrues, `sharePrice` increases; share balances stay constant. This keeps accounting clean and avoids rebasing surprises.
+
+<Callout type="info">
+  The profit-unlock window also blocks flash-loan APY manipulation — see [Security](/security).
+</Callout>

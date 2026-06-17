@@ -1,0 +1,25 @@
+---
+title: Positions
+description: Read a user's position.
+---
+
+## Get a position
+
+<span className="font-mono text-sm">**GET** `/v1/positions/:address`</span>
+
+```bash
+curl https://api.earnit.xyz/v1/positions/0xA11ce \
+  -H "Authorization: Bearer ek_live_…"
+```
+
+### Response
+
+```json
+{
+  "address": "0xA11ce",
+  "shares": "8120.55",
+  "currentValue": "8476.30",
+  "yieldEarned": "342.18",
+  "apy": 9.24
+}
+```

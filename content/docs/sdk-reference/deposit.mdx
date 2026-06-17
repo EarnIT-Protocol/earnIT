@@ -1,0 +1,40 @@
+---
+title: deposit()
+description: Deposit a stablecoin on behalf of a user and mint vault shares.
+---
+
+```ts
+earnit.deposit(params: DepositParams): Promise<DepositReceipt>
+```
+
+## Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `asset` | `"USDC" \| "cNGN" \| "EURC"` | Asset to deposit. |
+| `amount` | `string` | Decimal amount in asset units, e.g. `"150.00"`. |
+| `receiver` | `string` | Wallet address that receives the vault shares. |
+
+## Returns
+
+`DepositReceipt`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Deposit id. |
+| `shares` | `string` | Vault shares minted. |
+| `txHash` | `string` | Settlement transaction hash on Arc. |
+
+## Example
+
+```ts
+const receipt = await earnit.deposit({
+  asset: "USDC",
+  amount: "150.00",
+  receiver: userWalletAddress,
+});
+```
+
+<Callout type="info">
+  Deposits settle asynchronously. Listen for the `deposit.settled` [webhook](/docs/sdk-reference/webhooks) to confirm finality before crediting the user in your UI.
+</Callout>

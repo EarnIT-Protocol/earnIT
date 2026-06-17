@@ -1,0 +1,34 @@
+---
+title: Going to Production
+description: Checklist for moving from testnet to live.
+---
+
+<Callout type="warn">
+  EarnIT's core contracts are pre-audit and currently run on Arc testnet. Treat mainnet timelines as dependent on a completed third-party audit.
+</Callout>
+
+Before flipping to live:
+
+<Steps>
+
+<Step>
+### Swap keys
+Replace `ek_pub_test_`/`ek_test_` keys with `ek_pub_live_`/`ek_live_`. Keep secret keys server-side only.
+</Step>
+
+<Step>
+### Verify webhooks end to end
+Confirm signature verification and idempotent handling — webhooks may be delivered more than once.
+</Step>
+
+<Step>
+### Reconcile balances
+Use `getPosition()` / `GET /v1/positions/:address` as the source of truth when displaying balances; don't cache them indefinitely.
+</Step>
+
+<Step>
+### Monitor
+Watch deposits, withdrawals, and fee-share payouts in the [dashboard](/dashboard). Set alerts on failed webhook deliveries.
+</Step>
+
+</Steps>

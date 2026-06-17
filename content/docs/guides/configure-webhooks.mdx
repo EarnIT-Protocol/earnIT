@@ -1,0 +1,48 @@
+---
+title: Configure Webhooks
+description: Receive settlement events and verify their signatures.
+---
+
+<Steps>
+
+<Step>
+
+### Add an endpoint
+
+In the [dashboard](/dashboard) under **Webhooks**, add your HTTPS endpoint and select the events to subscribe to (`deposit.settled`, `withdraw.settled`, `yield.accrued`, `payout.sent`).
+
+</Step>
+
+<Step>
+
+### Verify the signature
+
+Every request includes an `EarnIT-Signature` header. Verify it against your signing secret before trusting the payload.
+
+```ts
+import { verifyWebhook } from "@earnit/sdk";
+
+export async function POST(req: Request) {
+  const body = await req.text();
+  const event = verifyWebhook(body, req.headers.get("EarnIT-Signature")!, process.env.EARNIT_WEBHOOK_SECRET!);
+  // event is now trusted
+}
+```
+
+</Step>
+
+<Step>
+
+### Handle the event
+
+```ts
+switch (event.type) {
+  case "deposit.settled":
+    await creditUser(event.data.receiver, event.data.shares);
+    break;
+}
+```
+
+</Step>
+
+</Steps>

@@ -1,0 +1,37 @@
+---
+title: withdraw()
+description: Redeem a user's vault shares back into the underlying asset.
+---
+
+```ts
+earnit.withdraw(params: WithdrawParams): Promise<WithdrawReceipt>
+```
+
+## Parameters
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `shares` | `string` | Vault shares to redeem. |
+| `receiver` | `string` | Wallet address that receives the asset. |
+| `maxLoss` | `number?` | Optional acceptable loss in basis points. Defaults to `0`. |
+
+## Returns
+
+`WithdrawReceipt`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Withdrawal id. |
+| `assets` | `string` | Asset amount returned. |
+| `txHash` | `string` | Settlement transaction hash. |
+
+## Example
+
+```ts
+const position = await earnit.getPosition(userWalletAddress);
+
+await earnit.withdraw({
+  shares: position.shares,
+  receiver: userWalletAddress,
+});
+```
