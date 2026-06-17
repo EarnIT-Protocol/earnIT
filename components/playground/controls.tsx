@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Switch } from "@/components/ui/Switch";
 
 /** Uppercase group heading inside the config panel. */
 export function GroupLabel({ children }: { children: ReactNode }) {
@@ -69,48 +70,14 @@ export function Segmented<T extends string>({
   );
 }
 
-/** iOS-style on/off switch. `locked` renders a non-interactive forced-on state. */
-export function Switch({
-  on,
-  onToggle,
-  locked = false,
-}: {
-  on: boolean;
-  onToggle?: () => void;
-  locked?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      disabled={locked}
-      onClick={onToggle}
-      className="relative h-[23px] w-10 rounded-full border-none transition-colors"
-      style={{
-        background: on || locked ? "#0A5C44" : "#D7D4C9",
-        opacity: locked ? 0.5 : 1,
-        cursor: locked ? "not-allowed" : "pointer",
-      }}
-      aria-pressed={on}
-    >
-      <span
-        className="absolute top-[2.5px] h-[18px] w-[18px] rounded-full bg-white transition-[left] duration-200"
-        style={{
-          left: on || locked ? "19px" : "2.5px",
-          boxShadow: "0 1px 2px rgba(0,0,0,.2)",
-        }}
-      />
-    </button>
-  );
-}
-
-/** Label + switch row. */
+/** Label + brand Radix switch row. `locked` forces a non-interactive on state. */
 export function SwitchRow({
   label,
   on,
   onToggle,
   locked = false,
 }: {
-  label: ReactNode;
+  label: string;
   on: boolean;
   onToggle?: () => void;
   locked?: boolean;
@@ -118,7 +85,12 @@ export function SwitchRow({
   return (
     <div className="flex items-center justify-between">
       <CtrlLabel>{label}</CtrlLabel>
-      <Switch on={on} onToggle={onToggle} locked={locked} />
+      <Switch
+        checked={on || locked}
+        onCheckedChange={() => onToggle?.()}
+        disabled={locked}
+        ariaLabel={label}
+      />
     </div>
   );
 }

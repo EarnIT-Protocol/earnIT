@@ -12,6 +12,8 @@ import type {
   WidgetAsset,
   WidgetTheme,
 } from "@/components/widget/types";
+import { Select } from "@/components/ui/Select";
+import { Slider } from "@/components/ui/Slider";
 import {
   CtrlLabel,
   GroupLabel,
@@ -123,14 +125,12 @@ export function ConfigPanel({
               {config.radius}px
             </span>
           </div>
-          <input
-            type="range"
+          <Slider
+            value={config.radius}
+            onValueChange={(radius) => setConfig({ radius })}
             min={0}
             max={32}
-            value={config.radius}
-            onChange={(e) => setConfig({ radius: parseInt(e.target.value, 10) })}
-            className="w-full cursor-pointer"
-            style={{ accentColor: "#0A5C44" }}
+            ariaLabel="Corner radius"
           />
         </div>
         <div className="flex flex-col gap-[7px]">
@@ -147,13 +147,13 @@ export function ConfigPanel({
         </div>
         <div className="flex flex-col gap-[7px]">
           <CtrlLabel>Font</CtrlLabel>
-          <Segmented<PlaygroundFont>
-            fill
+          <Select
             value={config.font}
-            onChange={(font) => setConfig({ font })}
+            onValueChange={(font) => setConfig({ font: font as PlaygroundFont })}
+            ariaLabel="Font"
             options={[
               { value: "General Sans", label: "General Sans" },
-              { value: "Clash Display", label: "Clash" },
+              { value: "Clash Display", label: "Clash Display" },
             ]}
           />
         </div>
@@ -175,11 +175,12 @@ export function ConfigPanel({
         <GroupLabel>Product</GroupLabel>
         <div className="flex flex-col gap-[7px]">
           <CtrlLabel>Asset</CtrlLabel>
-          <Segmented<WidgetAsset>
-            fill
+          <Select
             value={config.asset}
-            onChange={(asset) => {
+            ariaLabel="Asset"
+            onValueChange={(value) => {
               // Asset choice sensibly defaults the currency + vault name.
+              const asset = value as WidgetAsset;
               if (asset === "cNGN")
                 setConfig({ asset, currency: "NGN", vaultName: "cNGN Vault" });
               else if (asset === "EURC")
@@ -195,10 +196,12 @@ export function ConfigPanel({
         </div>
         <div className="flex flex-col gap-[7px]">
           <CtrlLabel>Display currency</CtrlLabel>
-          <Segmented<DisplayCurrency>
-            fill
+          <Select
             value={config.currency}
-            onChange={(currency) => setConfig({ currency })}
+            ariaLabel="Display currency"
+            onValueChange={(value) =>
+              setConfig({ currency: value as DisplayCurrency })
+            }
             options={[
               { value: "USD", label: "USD" },
               { value: "NGN", label: "NGN" },
