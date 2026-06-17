@@ -1,19 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { Check } from "lucide-react";
-import { DELIVERIES, WEBHOOK_ENDPOINT, WEBHOOK_EVENTS, type WebhookEvent } from "@/lib/mock/dashboard";
+import {
+  DEFAULT_EVENT_STATE,
+  DELIVERIES,
+  WEBHOOK_ENDPOINT,
+  WEBHOOK_EVENTS,
+  type WebhookEvent,
+} from "@/lib/mock/dashboard";
 
 const TH = "text-[11.5px] font-semibold uppercase tracking-[0.05em] text-muted-2";
 const GRID = "grid grid-cols-[1.6fr_1fr_1fr_110px] gap-3";
 
 /** Webhook endpoint config, event subscriptions, and delivery log. */
-export function Webhooks({
-  events,
-  onToggle,
-}: {
-  events: Record<WebhookEvent, boolean>;
-  onToggle: (e: WebhookEvent) => void;
-}) {
+export function Webhooks() {
+  const [events, setEvents] = useState<Record<WebhookEvent, boolean>>(DEFAULT_EVENT_STATE);
+  const onToggle = (e: WebhookEvent) => setEvents((prev) => ({ ...prev, [e]: !prev[e] }));
+
   return (
     <div className="flex flex-col gap-[18px]">
       <div className="flex flex-col gap-3.5 rounded-[18px] border border-hairline bg-card p-5 sm:p-6">

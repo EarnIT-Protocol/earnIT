@@ -1,9 +1,7 @@
-import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { Overview } from "@/components/dashboard/Overview";
 
-export const metadata = {
-  title: "Partner Dashboard · EarnIT",
-};
+export const metadata = { title: "Overview" };
 
-export default function DashboardPage() {
-  return <DashboardShell />;
+export default function DashboardOverviewPage() {
+  return <Overview />;
 }
