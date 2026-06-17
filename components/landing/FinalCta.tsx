@@ -24,7 +24,7 @@ export function FinalCta() {
               href="/get-started"
               className="rounded-xl bg-citron px-[26px] py-[15px] text-[15.5px] font-semibold text-ink no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-8px_rgba(198,242,78,.4)]"
             >
-              Get API key
+              Get started
             </Link>
             <Link
               href="/playground"
