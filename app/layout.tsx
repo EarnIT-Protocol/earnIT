@@ -9,11 +9,47 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const SITE_URL = "https://earnit-rho.vercel.app";
+const TITLE = "EarnIT — The yield engine consumer apps run on";
+const DESCRIPTION =
+  "Embed regulated real-world-asset yield in an afternoon. One SDK routes stablecoin deposits into Circle USYC treasury yield on Arc — your users earn, you earn a fee share.";
+
 export const metadata: Metadata = {
-  title: "EarnIT — The yield engine consumer apps run on",
-  description:
-    "Embed regulated real-world-asset yield in an afternoon. One SDK routes stablecoin deposits into Circle USYC treasury yield on Arc. Your users earn; you earn a fee share.",
-  metadataBase: new URL("https://earnit.xyz"),
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s · EarnIT",
+  },
+  description: DESCRIPTION,
+  applicationName: "EarnIT",
+  keywords: [
+    "EarnIT",
+    "RWA yield",
+    "real-world assets",
+    "USYC",
+    "Circle",
+    "Arc",
+    "stablecoin yield",
+    "ERC-4626",
+    "fintech infrastructure",
+    "embedded yield",
+    "DeFi",
+  ],
+  authors: [{ name: "EarnIT" }],
+  creator: "EarnIT",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "EarnIT",
+    url: SITE_URL,
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
