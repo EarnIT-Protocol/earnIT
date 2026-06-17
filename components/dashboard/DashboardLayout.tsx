@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Bell,
+  Check,
   ChevronsUpDown,
   KeyRound,
   Layers,
@@ -35,18 +36,38 @@ const NAV: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
 ];
 
-const menuItem =
-  "flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13.5px] text-ink outline-none data-[highlighted]:bg-[rgba(10,92,68,0.07)] data-[highlighted]:text-forest";
+type Org = { name: string; initial: string; plan: string };
+const ORGS: Org[] = [
+  { name: "Lumen Pay", initial: "L", plan: "Partner · Pro" },
+  { name: "Northwind", initial: "N", plan: "Partner · Growth" },
+];
 
-/** Sidebar body — shared by the desktop rail and the mobile drawer. */
-function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+const NOTIFS = [
+  { title: "Payout sent", body: "$44,180 to 0x9f2a…4Bd1", time: "2h" },
+  { title: "Yield accrued", body: "+$1,204 across vaults", time: "5h" },
+  { title: "API key created", body: "CI pipeline · test", time: "3d" },
+];
+
+const menuItem =
+  "flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13.5px] text-ink no-underline outline-none data-[highlighted]:bg-[rgba(10,92,68,0.07)] data-[highlighted]:text-forest";
+
+function SidebarContent({
+  pathname,
+  org,
+  onOrgChange,
+  onNavigate,
+}: {
+  pathname: string;
+  org: Org;
+  onOrgChange: (o: Org) => void;
+  onNavigate?: () => void;
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-[18px] px-2 py-1.5">
         <Logo size={32} href="/" />
       </div>
 
-      {/* Org switcher */}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
           <button
@@ -54,11 +75,11 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
             className="mb-[18px] flex w-full cursor-pointer items-center gap-2.5 rounded-[11px] border border-hairline bg-white p-2.5 text-left outline-none transition-colors hover:border-forest data-[state=open]:border-forest"
           >
             <span className="flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-forest font-mono text-[12px] font-semibold text-citron">
-              L
+              {org.initial}
             </span>
             <div className="flex min-w-0 flex-1 flex-col items-start leading-[1.1]">
-              <span className="text-[13.5px] font-semibold text-ink">Lumen Pay</span>
-              <span className="text-[11px] text-muted-2">Partner · Pro</span>
+              <span className="text-[13.5px] font-semibold text-ink">{org.name}</span>
+              <span className="text-[11px] text-muted-2">{org.plan}</span>
             </div>
             <ChevronsUpDown size={15} className="text-muted-2" />
           </button>
@@ -72,14 +93,15 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
             <DropdownMenu.Label className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-2">
               Organizations
             </DropdownMenu.Label>
-            <DropdownMenu.Item className={menuItem}>
-              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-forest font-mono text-[10px] font-semibold text-citron">L</span>
-              Lumen Pay
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={menuItem}>
-              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-muted font-mono text-[10px] font-semibold text-white">N</span>
-              Northwind
-            </DropdownMenu.Item>
+            {ORGS.map((o) => (
+              <DropdownMenu.Item key={o.name} className={menuItem} onSelect={() => onOrgChange(o)}>
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-forest font-mono text-[10px] font-semibold text-citron">
+                  {o.initial}
+                </span>
+                <span className="flex-1">{o.name}</span>
+                {o.name === org.name && <Check size={15} className="text-forest" />}
+              </DropdownMenu.Item>
+            ))}
             <DropdownMenu.Separator className="my-1 h-px bg-hairline" />
             <DropdownMenu.Item className={menuItem}>
               <Plus size={15} className="text-muted" />
@@ -89,7 +111,6 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
 
-      {/* Nav */}
       <nav className="flex flex-1 flex-col gap-0.5">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
@@ -109,7 +130,6 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
         })}
       </nav>
 
-      {/* User chip */}
       <div className="mt-2 flex items-center gap-2.5 border-t border-hairline p-2.5">
         <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[linear-gradient(135deg,#C6F24E,#7FBF52)] text-[12px] font-semibold text-ink">
           AK
@@ -123,21 +143,21 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
   );
 }
 
-/** The dashboard chrome — sidebar/drawer + topbar + footer around route content. */
 function DashboardChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { env, setEnv } = useDashboardEnv();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [org, setOrg] = useState<Org>(ORGS[0]);
+  const [unread, setUnread] = useState(NOTIFS.length);
   const title = NAV.find((n) => n.href === pathname)?.label ?? "Overview";
 
   return (
     <div className="min-h-screen bg-paper font-sans text-ink">
-      {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-[248px] flex-col border-r border-hairline bg-card px-3.5 py-[18px] lg:flex">
-        <SidebarContent pathname={pathname} />
+        <SidebarContent pathname={pathname} org={org} onOrgChange={setOrg} />
       </aside>
 
-      {/* Mobile drawer */}
       <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[300] bg-ink/40 backdrop-blur-sm lg:hidden" />
@@ -152,12 +172,11 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                 <X size={16} />
               </button>
             </Dialog.Close>
-            <SidebarContent pathname={pathname} onNavigate={() => setDrawerOpen(false)} />
+            <SidebarContent pathname={pathname} org={org} onOrgChange={setOrg} onNavigate={() => setDrawerOpen(false)} />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
 
-      {/* Main column */}
       <div className="flex min-h-screen flex-col lg:ml-[248px]">
         <header className="sticky top-0 z-[15] flex items-center justify-between gap-3 border-b border-hairline bg-[rgba(247,246,241,0.86)] px-4 py-3 backdrop-blur-[12px] sm:px-6 lg:px-7">
           <div className="flex min-w-0 items-center gap-2.5">
@@ -191,14 +210,45 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="hidden h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-hairline bg-white text-muted transition-colors hover:border-forest sm:flex"
-            >
-              <Bell size={18} />
-            </button>
 
+            {/* Notifications */}
+            <DropdownMenu.Root onOpenChange={(o) => o && setUnread(0)}>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  className="relative hidden h-[38px] w-[38px] items-center justify-center rounded-[10px] border border-hairline bg-white text-muted transition-colors hover:border-forest sm:flex"
+                >
+                  <Bell size={18} />
+                  {unread > 0 && (
+                    <span className="absolute right-2 top-2 h-[7px] w-[7px] rounded-full border border-white bg-citron" />
+                  )}
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={8}
+                  className="z-[400] w-[300px] rounded-xl border border-hairline bg-white p-1 shadow-[0_18px_36px_-18px_rgba(11,20,16,0.28)]"
+                >
+                  <div className="px-2.5 py-2 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted-2">
+                    Notifications
+                  </div>
+                  {NOTIFS.map((n) => (
+                    <div key={n.title} className="flex items-start gap-2.5 rounded-lg px-2.5 py-2 hover:bg-hairline-2">
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-forest" />
+                      <div className="flex flex-1 flex-col">
+                        <span className="text-[13px] font-medium text-ink">{n.title}</span>
+                        <span className="text-[12px] text-muted">{n.body}</span>
+                      </div>
+                      <span className="font-mono text-[11px] text-muted-2">{n.time}</span>
+                    </div>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            {/* User menu */}
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
                 <button
@@ -220,9 +270,11 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                     <div className="truncate text-[11.5px] text-muted-2">ada@lumenpay.co</div>
                   </div>
                   <DropdownMenu.Separator className="my-1 h-px bg-hairline" />
-                  <DropdownMenu.Item className={menuItem}>
-                    <UserRound size={15} className="text-muted" />
-                    Profile
+                  <DropdownMenu.Item asChild className={menuItem}>
+                    <Link href="/dashboard/settings">
+                      <UserRound size={15} className="text-muted" />
+                      Profile
+                    </Link>
                   </DropdownMenu.Item>
                   <DropdownMenu.Item asChild className={menuItem}>
                     <Link href="/dashboard/settings">
@@ -231,7 +283,10 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                     </Link>
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator className="my-1 h-px bg-hairline" />
-                  <DropdownMenu.Item className={`${menuItem} text-danger data-[highlighted]:bg-[rgba(192,73,43,0.08)] data-[highlighted]:text-danger`}>
+                  <DropdownMenu.Item
+                    className={`${menuItem} text-danger data-[highlighted]:bg-[rgba(192,73,43,0.08)] data-[highlighted]:text-danger`}
+                    onSelect={() => router.push("/signin")}
+                  >
                     <LogOut size={15} />
                     Sign out
                   </DropdownMenu.Item>
@@ -249,7 +304,6 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Public dashboard layout — provides env context, renders the chrome. */
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <DashboardEnvProvider>

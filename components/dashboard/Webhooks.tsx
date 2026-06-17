@@ -16,7 +16,13 @@ const GRID = "grid grid-cols-[1.6fr_1fr_1fr_110px] gap-3";
 /** Webhook endpoint config, event subscriptions, and delivery log. */
 export function Webhooks() {
   const [events, setEvents] = useState<Record<WebhookEvent, boolean>>(DEFAULT_EVENT_STATE);
+  const [endpoint, setEndpoint] = useState(WEBHOOK_ENDPOINT);
+  const [saved, setSaved] = useState(false);
   const onToggle = (e: WebhookEvent) => setEvents((prev) => ({ ...prev, [e]: !prev[e] }));
+  const save = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1600);
+  };
 
   return (
     <div className="flex flex-col gap-[18px]">
@@ -24,15 +30,17 @@ export function Webhooks() {
         <span className="text-[15px] font-semibold sm:text-[16px]">Endpoint</span>
         <div className="flex flex-col gap-2.5 sm:flex-row">
           <input
-            value={WEBHOOK_ENDPOINT}
-            readOnly
-            className="w-full flex-1 rounded-[10px] border border-hairline bg-white px-3.5 py-2.5 font-mono text-[13px] text-text-3"
+            value={endpoint}
+            onChange={(e) => setEndpoint(e.target.value)}
+            placeholder="https://api.yourapp.com/webhooks/earnit"
+            className="w-full flex-1 rounded-[10px] border border-hairline bg-white px-3.5 py-2.5 font-mono text-[13px] text-text-3 outline-none focus:border-forest"
           />
           <button
             type="button"
+            onClick={save}
             className="shrink-0 cursor-pointer rounded-[10px] bg-forest px-[18px] py-2.5 text-[14px] font-semibold text-paper transition-colors hover:brightness-110"
           >
-            Save
+            {saved ? "Saved ✓" : "Save"}
           </button>
         </div>
 
