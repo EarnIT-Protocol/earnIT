@@ -6,30 +6,31 @@ import {
   ACTIVITY_AMOUNT,
   ACTIVITY_DOT,
   ASSETS_AREA_POINTS,
+  CHART_MONTHS,
   STATS,
 } from "@/lib/mock/dashboard";
 
-/** Build the line + area paths for the assets-routed chart. */
 function buildPaths() {
   const line = ASSETS_AREA_POINTS.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x},${y}`).join(" ");
   const area = `${line} L600,200 L0,200 Z`;
-  return { line, area };
+  const [lastX, lastY] = ASSETS_AREA_POINTS[ASSETS_AREA_POINTS.length - 1];
+  return { line, area, endLeft: (lastX / 600) * 100, endTop: (lastY / 200) * 100 };
 }
 
 /** Partner overview: KPI cards + assets chart + recent activity feed. */
 export function Overview() {
-  const { line, area } = buildPaths();
+  const { line, area, endLeft, endTop } = buildPaths();
 
   return (
-    <div className="flex flex-col gap-[22px]">
+    <div className="flex flex-col gap-5">
       {/* Stat cards */}
-      <div className="ew-db-stats grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {STATS.map((s) => {
           const Icon = s.icon;
           return (
             <div
               key={s.label}
-              className="flex flex-col gap-2.5 rounded-2xl border border-hairline bg-card p-5"
+              className="flex flex-col gap-2.5 rounded-2xl border border-hairline bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-18px_rgba(11,20,16,0.18)]"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[13px] text-muted">{s.label}</span>
@@ -37,7 +38,7 @@ export function Overview() {
                   <Icon size={16} />
                 </span>
               </div>
-              <span className="font-mono text-[27px] font-semibold tracking-[-0.02em] text-ink">
+              <span className="font-mono text-[26px] font-semibold tracking-[-0.02em] text-ink sm:text-[27px]">
                 {s.value}
               </span>
               <span className="flex items-center gap-1 font-mono text-[12.5px] font-medium text-forest">
@@ -50,56 +51,75 @@ export function Overview() {
       </div>
 
       {/* Chart + activity */}
-      <div className="grid grid-cols-[1.6fr_1fr] gap-4 max-[820px]:grid-cols-1">
-        <div className="flex flex-col gap-4 rounded-[18px] border border-hairline bg-card p-6">
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
+        <div className="flex flex-col gap-4 rounded-[18px] border border-hairline bg-card p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-0.5">
-              <span className="text-[16px] font-semibold">Assets routed</span>
+              <span className="text-[15px] font-semibold sm:text-[16px]">Assets routed</span>
               <span className="text-[13px] text-muted-2">Last 12 months</span>
             </div>
-            <span className="font-mono text-[20px] font-semibold text-ink">$26.7M</span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[18px] font-semibold text-ink sm:text-[20px]">$26.7M</span>
+              <div className="hidden gap-0.5 rounded-lg border border-hairline bg-hairline-2 p-[3px] sm:flex">
+                {["3M", "6M", "12M"].map((r) => (
+                  <span
+                    key={r}
+                    className={`rounded-md px-2.5 py-1 font-mono text-[11.5px] font-medium ${
+                      r === "12M" ? "bg-white text-ink shadow-[0_1px_2px_rgba(11,20,16,0.08)]" : "text-muted-2"
+                    }`}
+                  >
+                    {r}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <svg
-            viewBox="0 0 600 200"
-            preserveAspectRatio="none"
-            className="block h-[180px] w-full"
-          >
-            <defs>
-              <linearGradient id="dbArea" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0A5C44" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#0A5C44" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d={area} fill="url(#dbArea)" />
-            <path
-              d={line}
-              fill="none"
-              stroke="#C6F24E"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+
+          {/* Chart with gridlines + end marker */}
+          <div className="relative h-[180px] w-full sm:h-[200px]">
+            {[0, 25, 50, 75, 100].map((t) => (
+              <div
+                key={t}
+                className="absolute left-0 right-0 border-t border-hairline/70"
+                style={{ top: `${t}%` }}
+              />
+            ))}
+            <svg viewBox="0 0 600 200" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+              <defs>
+                <linearGradient id="dbArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#0A5C44" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#0A5C44" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d={area} fill="url(#dbArea)" />
+              <path d={line} fill="none" stroke="#C6F24E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <span
+              className="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-citron shadow-[0_0_0_3px_rgba(198,242,78,0.3)]"
+              style={{ left: `${endLeft}%`, top: `${endTop}%` }}
             />
-          </svg>
+          </div>
+
+          {/* Month axis */}
+          <div className="hidden justify-between font-mono text-[11px] text-muted-2 sm:flex">
+            {CHART_MONTHS.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3.5 rounded-[18px] border border-hairline bg-card p-6">
-          <span className="text-[16px] font-semibold">Recent activity</span>
+        <div className="flex flex-col gap-3.5 rounded-[18px] border border-hairline bg-card p-5 sm:p-6">
+          <span className="text-[15px] font-semibold sm:text-[16px]">Recent activity</span>
           <div className="flex flex-col gap-3.5">
             {ACTIVITY.map((a) => (
               <div key={a.text} className="flex items-center gap-3">
-                <span
-                  className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ background: ACTIVITY_DOT[a.kind] }}
-                />
+                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: ACTIVITY_DOT[a.kind] }} />
                 <div className="flex min-w-0 flex-1 flex-col gap-px">
-                  <span className="text-[13.5px] font-medium text-ink">{a.text}</span>
+                  <span className="truncate text-[13.5px] font-medium text-ink">{a.text}</span>
                   <span className="text-[12px] text-muted-2">{a.time}</span>
                 </div>
                 {a.amount && (
-                  <span
-                    className="font-mono text-[13px] font-medium"
-                    style={{ color: ACTIVITY_AMOUNT[a.kind] }}
-                  >
+                  <span className="shrink-0 font-mono text-[13px] font-medium" style={{ color: ACTIVITY_AMOUNT[a.kind] }}>
                     {a.amount}
                   </span>
                 )}
