@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { NewsletterForm } from "./NewsletterForm";
@@ -71,7 +72,8 @@ export function SiteFooter() {
               SDK.
             </p>
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(198,242,78,0.18)] bg-[rgba(10,92,68,0.25)] px-3 py-[7px]">
-              <span className="h-[7px] w-[7px] rounded-full bg-citron" />
+              <Image src="/brand/arc-icon-light.svg" alt="Arc" width={14} height={14} unoptimized className="h-[14px] w-auto" />
+              <Image src="/brand/circle-icon-light.svg" alt="Circle" width={14} height={14} unoptimized className="h-[14px] w-auto" />
               <span className="whitespace-nowrap text-xs font-medium text-[#C7D2CB]">
                 Built on Arc · Powered by Circle USYC
               </span>
