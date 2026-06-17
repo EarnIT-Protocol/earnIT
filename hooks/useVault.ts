@@ -1,6 +1,7 @@
 import { useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt, useAccount } from "wagmi";
 import { useState, useCallback } from "react";
-import { ADDRESSES, ERC20_ABI, STRATEGY_ABI, TELLER_ABI, parseUsdc, formatUsdc, rateToApy } from "../lib/constants";
+import { CONTRACTS, ERC20_ABI, VAULT_ABI, TELLER_ABI } from "@/lib/contracts";
+import { parseUsdc, rateToApy } from "@/lib/format";
 
 // ─── Read: vault stats (TVL, user balances, allowance, APY) ──────────────────
 export function useVaultStats() {
@@ -8,12 +9,12 @@ export function useVaultStats() {
 
   const { data, refetch } = useReadContracts({
     contracts: [
-      { address: ADDRESSES.strategy, abi: STRATEGY_ABI, functionName: "totalAssets" },
-      { address: ADDRESSES.strategy, abi: STRATEGY_ABI, functionName: "totalSupply" },
-      { address: ADDRESSES.teller,   abi: TELLER_ABI,   functionName: "currentRate" },
-      { address: ADDRESSES.usdc,     abi: ERC20_ABI,    functionName: "balanceOf",    args: [address ?? "0x0"] },
-      { address: ADDRESSES.strategy, abi: STRATEGY_ABI, functionName: "balanceOf",    args: [address ?? "0x0"] },
-      { address: ADDRESSES.usdc,     abi: ERC20_ABI,    functionName: "allowance",    args: [address ?? "0x0", ADDRESSES.strategy] },
+      { address: CONTRACTS.vault, abi: VAULT_ABI, functionName: "totalAssets" },
+      { address: CONTRACTS.vault, abi: VAULT_ABI, functionName: "totalSupply" },
+      { address: CONTRACTS.teller,   abi: TELLER_ABI,   functionName: "currentRate" },
+      { address: CONTRACTS.usdc,     abi: ERC20_ABI,    functionName: "balanceOf",    args: [address ?? "0x0"] },
+      { address: CONTRACTS.vault, abi: VAULT_ABI, functionName: "balanceOf",    args: [address ?? "0x0"] },
+      { address: CONTRACTS.usdc,     abi: ERC20_ABI,    functionName: "allowance",    args: [address ?? "0x0", CONTRACTS.vault] },
     ],
     allowFailure: false,
   });
@@ -56,10 +57,10 @@ export function useDeposit() {
       if (currentAllowance < amount) {
         setStep("approving");
         const approveTx = await writeContractAsync({
-          address: ADDRESSES.usdc,
+          address: CONTRACTS.usdc,
           abi: ERC20_ABI,
           functionName: "approve",
-          args: [ADDRESSES.strategy, amount],
+          args: [CONTRACTS.vault, amount],
         });
         setTxHash(approveTx);
         // Wait a couple seconds for approval to land
@@ -68,8 +69,8 @@ export function useDeposit() {
 
       setStep("depositing");
       const depositTx = await writeContractAsync({
-        address: ADDRESSES.strategy,
-        abi: STRATEGY_ABI,
+        address: CONTRACTS.vault,
+        abi: VAULT_ABI,
         functionName: "deposit",
         args: [amount, address],
       });
@@ -102,8 +103,8 @@ export function useWithdraw() {
     setStep("redeeming");
     try {
       const tx = await writeContractAsync({
-        address: ADDRESSES.strategy,
-        abi: STRATEGY_ABI,
+        address: CONTRACTS.vault,
+        abi: VAULT_ABI,
         functionName: "redeem",
         args: [shareAmount, address, address],
       });
@@ -123,7 +124,7 @@ export function useWithdraw() {
 // ─── Sparkline: historical share price (mock from currentRate) ──────────────
 export function useSharePrice() {
   const { data } = useReadContract({
-    address: ADDRESSES.teller,
+    address: CONTRACTS.teller,
     abi: TELLER_ABI,
     functionName: "currentRate",
   });
