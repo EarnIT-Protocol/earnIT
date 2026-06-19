@@ -171,9 +171,9 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
             <TokenGlyph asset={asset} size={40} dark={dark} />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
               <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-.01em" }}>{vaultName}</span>
-              <span style={{ fontSize: 12, color: "var(--ew-muted)", fontFamily: "var(--font-mono), monospace" }}>
+              {/* <span style={{ fontSize: 12, color: "var(--ew-muted)", fontFamily: "var(--font-mono), monospace" }}>
                 {asset} · Treasury
-              </span>
+              </span> */}
             </div>
           </div>
           <div
@@ -203,7 +203,7 @@ export function EarnitYieldWidget(props: EarnitYieldWidgetProps) {
         </div>
 
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {["USYC Strategy", "ERC-4626", "Arc"].map((tag) => (
+          {["USYC Strategy"].map((tag) => (
             <span
               key={tag}
               style={{

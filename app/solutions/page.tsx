@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
-import { EarnitYieldWidget } from "@/components/widget/EarnitYieldWidget";
+// import { EarnitYieldWidget } from "@/components/widget/EarnitYieldWidget";
+import { ConnectedEarnitWidget } from "@/components/widget/ConnectedEarnitWidget";
 import { SolutionsHero } from "@/components/solutions/SolutionsHero";
 import { SegmentSection } from "@/components/solutions/SegmentSection";
 import {
@@ -31,7 +32,8 @@ export default function SolutionsPage() {
         cta={{ label: "Try it in the Playground", href: "/playground" }}
         art={
           <div className="w-[360px] max-w-full">
-            <EarnitYieldWidget vaultName="Savings" connected />
+            {/* <EarnitYieldWidget vaultName="Savings" connected /> */}
+            <ConnectedEarnitWidget />
           </div>
         }
       >

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Plus } from "lucide-react";
-import { EarnitYieldWidget } from "@/components/widget/EarnitYieldWidget";
+import { ConnectedEarnitWidget } from "@/components/widget/ConnectedEarnitWidget";
 
 /** Live yield figure that ticks up ~every 90ms, mirroring the prototype. */
 function useLiveEarned() {
@@ -55,7 +55,7 @@ export function Hero() {
           </h1>
 
           <p className="max-w-[480px] text-pretty text-[19px] leading-[1.55] text-muted">
-            Embed regulated real-world-asset yield in an afternoon. One SDK. Your users earn — you earn a share.
+            Embed regulated RWA yield. One SDK. Your users earn — you earn a share.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -101,14 +101,14 @@ export function Hero() {
             }}
           />
           <div className="relative mx-auto w-full max-w-[400px] animate-[ew-float_6s_ease-in-out_infinite]">
-            {/* Dark "Live yield" badge — figure animates */}
+            {/* Dark "Live yield" badge — figure animates
             <div className="absolute -top-[18px] -left-[22px] z-[3] flex items-center gap-2 rounded-xl bg-ink px-[13px] py-2 shadow-[0_12px_30px_-8px_rgba(11,20,16,.4)]">
               <span className="h-[7px] w-[7px] rounded-full bg-citron animate-[ew-pulse_1.6s_ease-in-out_infinite]" />
               <span className="text-xs text-[#C7D2CB]">Live yield</span>
               <span className="font-mono text-[13px] font-semibold text-citron tabular-nums">
                 +${earned.toFixed(4)}
               </span>
-            </div>
+            </div> */}
 
             {/* Light "Built on Arc" badge */}
             <div className="absolute -bottom-4 -right-[18px] z-[3] flex items-center gap-[7px] rounded-xl border border-hairline bg-card px-[13px] py-2 shadow-[0_12px_30px_-10px_rgba(11,20,16,.18)]">
@@ -116,7 +116,7 @@ export function Hero() {
               <span className="whitespace-nowrap text-xs text-muted">Built on Arc · Circle USYC</span>
             </div>
 
-            <EarnitYieldWidget connected />
+            <ConnectedEarnitWidget />
           </div>
         </motion.div>
       </div>

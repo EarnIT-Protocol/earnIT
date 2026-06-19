@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 const SITE_URL = "https://earnit-rho.vercel.app";
 const TITLE = "EarnIT — The yield engine consumer apps run on";
 const DESCRIPTION =
-  "Embed regulated real-world-asset yield in an afternoon. One SDK routes stablecoin deposits into Circle USYC treasury yield on Arc — your users earn, you earn a fee share.";
+  "Embed regulated RWA yield. One SDK routes stablecoin deposits into Circle USYC treasury yield on Arc — your users earn, you earn a fee share.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

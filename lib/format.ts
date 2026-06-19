@@ -25,9 +25,14 @@ export function formatShares(amount: bigint): string {
 
 // Annualises the teller's per-period rate assuming daily compounding.
 // e.g. 1_000_500 -> 0.05%/day -> ~20% APY.
+// export function rateToApy(rate: bigint): number {
+//   const dailyRate = Number(rate - PERIOD_RATE_PRECISION) / Number(PERIOD_RATE_PRECISION);
+//   return (Math.pow(1 + dailyRate, 365) - 1) * 100;
+// }
 export function rateToApy(rate: bigint): number {
-  const dailyRate = Number(rate - PERIOD_RATE_PRECISION) / Number(PERIOD_RATE_PRECISION);
-  return (Math.pow(1 + dailyRate, 365) - 1) * 100;
+  // Treat as simple annualized rate: (rate - 1e6) / 1e6 * 100
+  const annualRate = Number(rate - 1_000_000n) / 1_000_000;
+  return annualRate * 100; // → ~1.16%
 }
 
 // Compact USD display for headline figures like TVL ($26.7M).
