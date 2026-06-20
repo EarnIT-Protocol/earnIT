@@ -1,12 +1,9 @@
 # EarnIT Protocol
 
-**B2B RWA Yield Infrastructure — Built natively on Arc**
-
+DEMO VIDEO: https://00234.oneapp.dev/
 ---
 
-## Overview
-
-EarnIT is a yield infrastructure layer that lets any fintech, neobank, or DeFi protocol embed commodity-backed RWA yield in an afternoon. Partners integrate a single SDK. Their users deposit **cNGN** — Nigeria's regulated naira stablecoin — and earn 9–12% APY on their naira asset, with the protocol handling the USDC conversion internally via a built-in Curve-style stableswap.
+EarnIT is a yield infrastructure layer that lets any fintech, neobank, or DeFi protocol embed commodity-backed RWA yield. Partners integrate a single SDK. Their users deposit **cNGN** — Nigeria's regulated naira stablecoin — and earn 9–12% APY on their naira asset, with the protocol handling the USDC conversion internally via a built-in Curve-style stableswap.
 
 Under the hood: cNGN deposits are routed through an on-chain FX swap (cNGN → USDC), deployed into the USYC yield strategy, and redeemable back to cNGN at any time. Users stay denominated in naira. EarnIT handles the rest.
 
