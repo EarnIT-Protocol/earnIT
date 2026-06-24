@@ -103,7 +103,8 @@ report()  →  (profit, loss)
 | Teller | `0x1DC8C46DEF44C89dE572277ffe5Ea15c2C23B8Ef` |
 | Factory | `0x34bFd737C2073DCD2913f6bE344e0f626f24aa10` |
 | Strategy | `0x2F6470599C0Ee4E29C337C2C26f235a4EBBd6474` |
-
+| cNGN |
+`0x3afDf1831D1FFe96093533aF81120A903DAf0bE0` |
 ---
 
 ## Partner Integration
